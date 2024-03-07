@@ -1,21 +1,19 @@
-import { createContactSchema, updateContactSchema } from "../schemas/contactsSchemas.js";
-import contactsService from "../services/contactsServices.js";
+import Contacts, { createContactSchema, updateContactSchema } from "../schemas/contactsSchemas.js";
 
 export const getAllContacts = async(req, res) => {
     try {
-        const contacts = await contactsService.listContacts();
-        
-        res.status(200).json(contacts);
-    } catch (error) {
-        console.error('Error fetching contacts:', error);
-        res.status(500).json({ message: 'Server error' });
-    }
+        const result = await Contacts.find();
+    res.status(200).json(result);
+  } catch (error) {
+    console.error("Error getting contacts:", error.message);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
 };
 export const getOneContact = async(req, res) => {
     try {
         const { id } = req.params;
         
-        const contact = await contactsService.getContactById(id);
+        const contact = await Contacts.findById(id);
         
         res.status(200).json(contact);
     } catch (error) {
@@ -27,7 +25,7 @@ export const getOneContact = async(req, res) => {
 export const deleteContact = async(req, res) => {
     try {
         const { id } = req.params;
-        const contact = await contactsService.removeContact(id);
+       const contact = await Contacts.findByIdAndDelete(id);
         
         res.status(200).json(contact);
     } catch (error) {
@@ -49,7 +47,7 @@ export const createContact = async(req, res) => {
        return res.status(400).json({ message: validationResult.error.message });
       }
 
-        const contacts = await contactsService.addContact(name, email, phone );
+       const contacts = await Contacts.create({name, email, phone} );
         
         res.status(200).json(contacts);
     } catch (error) {
@@ -69,12 +67,33 @@ export const updateContact = async(req, res) => {
         if (validationResult.error) {
             return res.status(400).json({ message: validationResult.error.message });
         }
-    const contacts = await contactsService.updateContact(name, email, phone, id);
+    const contacts = await Contacts.findByIdAndUpdate(id, { name, email, phone });
         
         res.status(200).json(contacts);
     } catch (error) {
-        console.error('Error deleting contact:', error);
+         console.error('Error updating contact:', error);
         res.status(500).json({ message: 'Server error' });
     }
 };
 
+export const updateStatusContact = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+
+        const contact = await Contacts.findById(id);
+        if (!contact) {
+            return res.status(404).json({ message: 'Contact not found' });
+        }
+
+        contact.favorite = !contact.favorite;
+
+        const updatedContact = await contact.save();
+
+        res.status(200).json(updatedContact);
+
+    } catch (error) {
+        console.error('Error updating contact:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+}
