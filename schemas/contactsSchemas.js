@@ -1,7 +1,8 @@
 import Joi from "joi";
 import mongoose from "mongoose"
+const { Schema } = mongoose; 
 
-const contactSchema = new mongoose.Schema({
+const contactSchema = new Schema({
   name: {
     type: String,
     required: [true, 'Set name for contact']
@@ -18,12 +19,17 @@ const contactSchema = new mongoose.Schema({
     favorite: {
         type: Boolean,
         default: false
-  },
+    },
+    owner: {
+      type: Schema.Types.ObjectId,
+      ref: 'Users',
+    }
 }, { versionKey: false })
 
 const Contacts = mongoose.model('Contacts', contactSchema);
 
 export default Contacts;
+
 
 
 export const createContactSchema = Joi.object({
