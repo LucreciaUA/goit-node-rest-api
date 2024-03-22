@@ -6,6 +6,8 @@ import contactsRouter from "./routes/contactsRouter.js";
 import mongoose from "mongoose";  
 import dotenv from "dotenv";
 import usersRouter from "./routes/usersRouter.js";
+import uploadRouter from "./routes/uploadRouter.js";
+import authRouter from "./routes/authRouter.js";
 
 
 dotenv.config();
@@ -18,6 +20,9 @@ app.use(express.json());
 
 app.use("/api/contacts", contactsRouter);
 app.use("/api/users", usersRouter);
+app.use("/api/users", uploadRouter)
+app.use('api/auth', authRouter)
+
 
 app.use((_, res) => {
    res.status(404).json({
