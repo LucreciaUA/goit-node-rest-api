@@ -22,7 +22,11 @@ const userSchema = new Schema(
   token: {
     type: String,
     default: null,
-  },
+        },
+        avatar: {
+            type: String,
+            default: null
+  }
 }, { versionKey: false })
 
 const User = mongoose.model('Users', userSchema)
@@ -45,5 +49,4 @@ export const createUserSchema = Joi.object({
         .max(30)
         .trim()
         .required(),
-
 })

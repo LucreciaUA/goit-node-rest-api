@@ -22,7 +22,7 @@ export const getOneContact = async(req, res) => {
         const contact = await Contacts.findById(id)
                                         .populate("owner", "name email")
                                         .where("owner")
-                                        .equals(owner);;
+                                        .equals(owner);
         
         res.status(200).json(contact);
     } catch (error) {
@@ -96,13 +96,15 @@ export const updateContact = async(req, res) => {
 export const updateStatusContact = async (req, res) => {
     try {
         const { id } = req.params;
-
+        const { _id: owner } = req.user;
 
         const contact = await Contacts.findById(id);
         if (!contact) {
             return res.status(404).json({ message: 'Contact not found' });
         }
-
+        if (contact.owner.toString() !== owner) {
+            return res.status(403).json({ message: 'Unauthorized to update this contact' });
+        }
         contact.favorite = !contact.favorite;
 
         const updatedContact = await contact.save();
